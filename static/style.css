@@ -14,14 +14,8 @@
     --nav-color: #020617;
 }
 
-
-
 * {
     box-sizing: border-box;
-}
-
-img {
-    border-radius: 8px;
 }
 
 body {
@@ -33,47 +27,11 @@ body {
     font-size: 16px;
 }
 
-@media (max-width: 600px) {
-    body {
-        font-size: 18px;
-    }
-
-    h1,
-    h2,
-    h3 {
-        font-size: 1.3em;
-    }
-
-    button {
-        padding: 12px 18px;
-        font-size: 16px;
-    }
-
-    input {
-        font-size: 16px;
-        padding: 12px;
-    }
-
-    table {
-        font-size: 14px;
-    }
+img {
+    border-radius: 8px;
+    max-width: 100%;
+    height: auto;
 }
-
-@media (max-width: 600px) {
-    .card {
-        padding: 16px;
-    }
-}
-
-@media (max-width: 600px) {
-
-    .navbar a,
-    .navbar button {
-        font-size: 16px;
-        padding: 10px 14px;
-    }
-}
-
 
 .container {
     width: 100%;
@@ -82,8 +40,7 @@ body {
     padding: 20px;
 }
 
-
-/* ===== Navbar ===== */
+/* ===== NAVBAR ===== */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -121,8 +78,132 @@ body {
     cursor: pointer;
 }
 
-/* 📱 Mobile Navbar */
+/* ===== GRID ===== */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+/* ===== CARDS ===== */
+.card {
+    background-color: var(--card-color);
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.card h2 {
+    font-size: 32px;
+    margin: 10px 0 0 0;
+    color: #38bdf8;
+}
+
+/* ===== BUTTONS ===== */
+button,
+.btn {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #1d4ed8;
+}
+
+/* ===== INPUTS ===== */
+input,
+select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    margin-bottom: 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    font-size: 14px;
+}
+
+[data-theme="dark"] input {
+    background-color: #020617;
+    color: #e5e7eb;
+}
+
+/* ===== TABLE ===== */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    min-width: 650px;
+    border-collapse: collapse;
+    background-color: var(--card-color);
+}
+
+th,
+td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    background-color: var(--nav-color);
+}
+
+/* ===== CHARTS ===== */
+.charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar-bg {
+    background: #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 14px;
+    margin-top: 10px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #38bdf8, #6366f1);
+}
+
+/* ===== MOBILE ===== */
 @media (max-width: 768px) {
+
+    .container {
+        padding: 10px;
+    }
+
+    body {
+        font-size: 16px;
+    }
+
+    h1,
+    h2,
+    h3 {
+        font-size: 18px;
+    }
+
+    button,
+    input {
+        width: 100%;
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    /* Navbar */
     .nav-toggle {
         display: block;
     }
@@ -143,254 +224,8 @@ body {
         display: flex;
     }
 
-    .nav-links a {
-        padding: 12px;
-    }
-}
-
-
-
-/* Grid */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 16px;
-}
-
-/* Glass Cards */
-.card {
-    background-color: var(--card-color);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    border: 1px solid var(--border-color);
-}
-
-
-
-/* Big Numbers */
-.card h2 {
-    font-size: 32px;
-    margin: 10px 0 0 0;
-    color: #38bdf8;
-}
-
-/* Buttons */
-button {
-    background-color: #2563eb;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-button:hover {
-    background-color: #1d4ed8;
-}
-
-button,
-.btn {
-    padding: 10px 14px;
-    font-size: 16px;
-    border-radius: 6px;
-}
-
-
-
-/* Inputs */
-input {
-    width: 100%;
-    padding: 10px;
-    margin-top: 6px;
-    margin-bottom: 14px;
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-    background-color: #ffffff;
-    color: #111111;
-    font-size: 14px;
-}
-
-/* Dark mode input */
-[data-theme="dark"] input {
-    background-color: #020617;
-    color: #e5e7eb;
-}
-
-label {
-    font-weight: bold;
-    display: block;
-    margin-top: 10px;
-}
-
-
-/* Tables */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-th,
-td {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 10px;
-}
-
-/* Section titles */
-h2,
-h3 {
-    color: #38bdf8;
-}
-
-.progress-bar-bg {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    overflow: hidden;
-    height: 14px;
-    margin-top: 10px;
-}
-
-.progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #38bdf8, #6366f1);
-    width: 0%;
-    transition: 1s;
-}
-
-.table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    margin-bottom: 20px;
-}
-
-table {
-    width: 100%;
-    min-width: 650px;
-    /* important */
-    border-collapse: collapse;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: var(--card-color);
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-th {
-    background-color: var(--nav-color);
-    color: var(--text-color);
-    border-bottom: 1px solid var(--border-color);
-    font-weight: bold;
-}
-
-td {
-    border-bottom: 1px solid var(--border-color);
-}
-
-th,
-td {
-    padding: 10px;
-    text-align: center;
-}
-
-tr:hover {
-    background-color: rgba(0, 0, 0, 0.04);
-}
-
-/* Dark mode hover fix */
-[data-theme="dark"] tr:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-}
-
-/* ===== Mobile Responsive ===== */
-@media (max-width: 768px) {
-
-    body {
-        font-size: 16px;
-    }
-
-    .container {
-        padding: 10px;
-    }
-
-    h1, h2, h3 {
-        font-size: 18px;
-    }
-
-    button, input {
-        width: 100%;
-        font-size: 16px;
-        padding: 10px;
-    }
-
-    img {
-        max-width: 100%;
-        height: auto;
-    }
-}
-
-
-@media (max-width: 768px) {
-
-    /* Container padding */
-    .container {
-        padding: 10px;
-    }
-
-    /* Navbar buttons wrap */
-    .nav-links {
-        flex-wrap: wrap;
-        gap: 6px;
-    }
-
-    /* Summary cards stack */
-    .cards {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-
     /* Charts stack */
     .charts {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
+        grid-template-columns: 1fr;
     }
-
-    @media (max-width: 768px) {
-        .charts {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    /* Reduce big font sizes */
-    h1,
-    h2,
-    h3 {
-        font-size: 18px;
-    }
-
-    /* Make buttons smaller */
-    button {
-        padding: 6px 10px;
-        font-size: 13px;
-    }
-
-    /* Tables scroll */
-    .table-wrapper {
-        overflow-x: auto;
-    }
-
-    table {
-        min-width: 650px;
-    }
-}
-
-.chart-box img {
-    max-width: 100%;
-    height: auto;
 }
