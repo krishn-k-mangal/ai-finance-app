@@ -336,3 +336,55 @@ tr:hover {
         height: auto;
     }
 }
+
+@media (max-width: 768px) {
+
+    /* Container padding */
+    .container {
+        padding: 10px;
+    }
+
+    /* Navbar buttons wrap */
+    .nav-links {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    /* Summary cards stack */
+    .cards {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    /* Charts stack */
+    .charts {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    /* Reduce big font sizes */
+    h1, h2, h3 {
+        font-size: 18px;
+    }
+
+    /* Make buttons smaller */
+    button {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+
+    /* Tables scroll */
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 650px;
+    }
+}
+.chart-box img {
+    max-width: 100%;
+    height: auto;
+}
