@@ -2,6 +2,17 @@ from flask import Flask, render_template, request, redirect, session, flash, Res
 import psycopg2
 import os
 from datetime import datetime, timedelta
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+from flask import send_file
+import pandas as pd
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
@@ -160,6 +171,8 @@ def dashboard():
     over_budget = month_expense > monthly_budget and monthly_budget > 0
 
     conn.close()
+    chart_path = generate_monthly_expense_chart(session["user_id"])
+    pie_chart_path = generate_category_pie_chart(session["user_id"])
 
     return render_template(
         "dashboard.html",
@@ -172,7 +185,10 @@ def dashboard():
         monthly_budget=monthly_budget,
         month_expense=month_expense,
         remaining_budget=remaining_budget,
-        over_budget=over_budget
+        over_budget=over_budget,
+        chart_path=chart_path,
+        pie_chart_path=pie_chart_path,
+
     )
 
 # ------------------ ADD INCOME ------------------
@@ -268,6 +284,7 @@ def set_budget():
 
 @app.route("/summary")
 def summary():
+
     if "user_id" not in session:
         return redirect("/")
 
@@ -321,6 +338,7 @@ def summary():
         this_month=this_month,
         last_month=last_month
     )
+
 @app.route("/export_expenses")
 def export_expenses():
     if "user_id" not in session:
@@ -348,7 +366,107 @@ def export_expenses():
     )
 
 
+@app.route("/export_expenses_pdf")
+def export_expenses_pdf():
+    if "user_id" not in session:
+        return redirect("/")
 
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT title, amount, category, date FROM expenses WHERE user_id = %s",
+        (session["user_id"],)
+    )
+    rows = cursor.fetchall()
+    conn.close()
+
+    file_path = "expenses_report.pdf"
+
+    doc = SimpleDocTemplate(file_path, pagesize=A4)
+    styles = getSampleStyleSheet()
+    elements = []
+
+    title = Paragraph("Expenses Report", styles["Title"])
+    elements.append(title)
+
+    data = [["Title", "Amount", "Category", "Date"]]
+
+    for row in rows:
+        data.append([row[0], str(row[1]), row[2], row[3]])
+
+    table = Table(data)
+    table.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (-1,0), colors.lightgrey),
+        ("GRID", (0,0), (-1,-1), 1, colors.black),
+        ("ALIGN", (1,1), (-1,-1), "CENTER"),
+    ]))
+
+    elements.append(table)
+    doc.build(elements)
+
+    return send_file(file_path, as_attachment=True)
+
+def get_expense_dataframe(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT date, amount, category FROM expenses WHERE user_id = %s",
+        (user_id,)
+    )
+    rows = cursor.fetchall()
+    conn.close()
+
+    df = pd.DataFrame(rows, columns=["date", "amount", "category"])
+    return df
+
+def generate_monthly_expense_chart(user_id):
+    df = get_expense_dataframe(user_id)
+
+    if df.empty:
+        return None
+
+    df["amount"] = pd.to_numeric(df["amount"], errors="coerce")
+    df["date"] = pd.to_datetime(df["date"])
+
+    df["month"] = df["date"].dt.to_period("M")
+    monthly = df.groupby("month")["amount"].sum()
+
+    plt.figure(figsize=(6, 4))
+    monthly.plot(kind="bar")
+    plt.title("Monthly Expenses")
+    plt.xlabel("Month")
+    plt.ylabel("Amount")
+
+    path = "static/charts/monthly_expense.png"
+    plt.tight_layout()
+    plt.savefig(path)
+    plt.close()
+
+    return path
+
+def generate_category_pie_chart(user_id):
+    df = get_expense_dataframe(user_id)
+
+    if df.empty:
+        return None
+
+    df["amount"] = pd.to_numeric(df["amount"], errors="coerce")
+
+    category_sum = df.groupby("category")["amount"].sum()
+
+    plt.figure(figsize=(6, 4))
+    category_sum.plot(kind="pie", autopct="%1.1f%%")
+    plt.title("Expense by Category")
+    plt.ylabel("")
+
+    path = "static/charts/category_expense.png"
+    plt.tight_layout()
+    plt.savefig(path)
+    plt.close()
+
+    return path
 
 
 if __name__ == "__main__":
