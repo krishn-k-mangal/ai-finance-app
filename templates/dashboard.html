@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+
+</head>
+<script>
+    function toggleTheme() {
+        let current = document.documentElement.getAttribute("data-theme");
+        if (current === "dark") {
+            document.documentElement.removeAttribute("data-theme");
+            localStorage.setItem("theme", "light");
+        } else {
+            document.documentElement.setAttribute("data-theme", "dark");
+            localStorage.setItem("theme", "dark");
+        }
+    }
+
+    // Load saved theme
+    let savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+    }
+</script>
+
+
+<body>
+
+    <div class="container">
+        <h2>Dashboard</h2>
+        <div class="navbar">
+            <div>💰 Finance App</div>
+            <div>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/add_income">Add Income</a>
+                <a href="/add_expense">Add Expense</a>
+                <a href="/set_budget">Set Budget</a>
+                <a href="/profile">Profile</a>
+                <a href="/logout">Logout</a>
+                <a href="/summary">Summary</a>
+
+            </div>
+            <button onclick="toggleTheme()">🌓</button>
+
+        </div>
+        <div class="card" style="margin-bottom:20px; border:1px solid #38bdf8;">
+            <h3>🤖 AI Assistant</h3>
+            <p>Hello {{ username }}, I analyzed your finances and prepared a smart report for you.</p>
+        </div>
+
+
+
+        <h2>Welcome, {{ username }} 👋</h2>
+
+
+        <div class="grid" style="margin-top:20px;">
+            <div class="card" style="border-left:5px solid #38bdf8;">
+
+                <h3>Total Income</h3>
+                <h2>₹ {{ total_income }}</h2>
+            </div>
+
+            <div class="card" style="border-left:5px solid #f87171;">
+
+                <h3>Total Expense</h3>
+                <h2>₹ {{ total_expense }}</h2>
+            </div>
+
+            <div class="card" style="border-left:5px solid #4ade80;">
+
+                <h3>Balance</h3>
+                <h2>₹ {{ balance }}</h2>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+            <h3>🎯 Monthly Budget</h3>
+            <p>Budget: ₹ {{ monthly_budget }}</p>
+            <p>Spent: ₹ {{ month_expense }}</p>
+            <p>Remaining: ₹ {{ remaining_budget }}</p>
+
+            {% if monthly_budget > 0 %}
+            {% set used_percent = (month_expense / monthly_budget) * 100 %}
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: {{ used_percent }}%;"></div>
+            </div>
+            <p>{{ used_percent | round(1) }}% used</p>
+            {% endif %}
+
+            {% if over_budget %}
+            <p style="color:#ff4d4d; font-weight:bold;">⚠️ Over budget!</p>
+            {% else %}
+            <p style="color:#4ade80;">✅ Under control</p>
+            {% endif %}
+        </div>
+
+
+        {% if top_category %}
+        <h3>🧠 Smart Insight</h3>
+        <p>Your highest expense category is <b>{{ top_category }}</b> (₹ {{ top_category_amount }})</p>
+        {% endif %}
+        <div class="grid">
+            {% if chart_path %}
+            <div class="card">
+                <h3>📈 Monthly Expense Trend</h3>
+                <div style="text-align:center;">
+                    <img src="{{ chart_path }}" style="max-width:100%; height:auto;">
+                </div>
+            </div>
+
+            {% else %}
+            <p>No expense data to show chart.</p>
+            {% endif %}
+
+            {% if pie_chart_path %}
+            <div class="card">
+                <h3>🥧 Category-wise Expense</h3>
+                <div style="text-align:center;">
+                    <img src="{{ pie_chart_path }}" style="max-width:100%; height:auto;">
+                </div>
+            </div>
+            {% else %}
+            <p>No expense data to show chart.</p>
+
+            {% endif %}
+        </div>
+        {% if comparison_message %}
+        <div class="card" style="margin-top:20px;">
+            <h3>📊 Monthly Trend</h3>
+            <p>{{ comparison_message }}</p>
+        </div>
+        {% endif %}
+        <div class="card">
+            <h3>💯 Financial Health Score</h3>
+            <h2>{{ health_score }} / 100</h2>
+            <p>{{ health_message }}</p>
+        </div>
+
+
+        {% if insights %}
+        <div class="card" style="margin-top:20px;">
+            <h3>🧠 AI Insights</h3>
+            <ul>
+                {% for msg in insights %}
+                <li>✨ {{ msg }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if predicted_expense %}
+        <div class="card" style="margin-top:20px; border:1px solid var(--border-color);">
+            <h3>🔮 AI Prediction</h3>
+            <p>Predicted next month expense:</p>
+            <h2>₹ {{ predicted_expense | round(2) }}</h2>
+            <p style="font-size:14px; opacity:0.8;">🧠 {{ prediction_note }}</p>
+            <p style="font-size:12px; opacity:0.6;">⚠️ This is an estimate, not a guarantee.</p>
+        </div>
+        {% endif %}
+
+
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3>💰 Income</h3>
+            <a href="/add_income">
+                <button>Add</button>
+            </a>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <tr>
+                    <th>Title</th>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+
+                {% for i in incomes %}
+                <tr>
+                    <td>{{ i["title"] }}</td>
+                    <td>{{ i["amount"] }}</td>
+                    <td>{{ i["category"] }}</td>
+                    <td>{{ i["date"] }}</td>
+                    <td>
+                        <div style="justify-content: center;">
+                            <a href="/edit_income/{{ i['id'] }}">✏️</a> |
+                            <a href="/delete_income/{{ i['id'] }}">🗑️</a>
+
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <form method="get" action="/dashboard" style="margin-bottom:10px;">
+            <input type="text" name="q" placeholder="Search by title or category">
+            <button type="submit">Search</button>
+        </form>
+
+        <form method="get" action="/dashboard" style="margin-bottom:10px;">
+            <div style="align-items: center;">
+                <input type="date" name="from_date">
+                <input type="date" name="to_date">
+            </div>
+            <button type="submit">Filter</button>
+            <a href="/dashboard"><button type="button">Reset</button></a>
+        </form>
+
+
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3>💸 Expenses</h3>
+            <div>
+                <a href="/add_expense">
+                    <button style="margin:0lh;">Add</button>
+                </a>
+                <a href="/export_expenses">
+                    <button>📥CSV</button>
+                </a>
+                <a href="/export_expenses_pdf"><button>📄PDF</button></a>
+
+            </div>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <tr>
+                    <th>Title</th>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+
+                {% for e in expenses %}
+                <tr>
+                    <td>{{ e["title"] }}</td>
+                    <td>{{ e["amount"] }}</td>
+                    <td>{{ e["category"] }}</td>
+                    <td>{{ e["date"] }}</td>
+                    <td>
+                        <div class="" style="justify-content: center;">
+                            <a class="action-btn action-edit" href="/edit_expense/{{ e['id'] }}">✏️</a>
+                            <a class="action-btn action-delete" href="/delete_expense/{{ e['id'] }}">🗑️</a>
+
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+</body>
+
+</html>

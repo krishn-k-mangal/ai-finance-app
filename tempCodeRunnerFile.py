@@ -1,0 +1,2 @@
+ction()
+        cursor = conn.curso

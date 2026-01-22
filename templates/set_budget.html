@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Set Budget</title>
+    <link rel="stylesheet" href="/static/style.css">
+
+</head>
+<script>
+    function toggleTheme() {
+        let current = document.documentElement.getAttribute("data-theme");
+        if (current === "dark") {
+            document.documentElement.removeAttribute("data-theme");
+            localStorage.setItem("theme", "light");
+        } else {
+            document.documentElement.setAttribute("data-theme", "dark");
+            localStorage.setItem("theme", "dark");
+        }
+    }
+
+    // Load saved theme
+    let savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+    }
+</script>
+
+<body>
+    
+
+    <div class="container">
+
+        <div class="navbar">
+            <div>🤖 AI Finance</div>
+            <div>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/profile">Profile</a>
+                <a href="/logout">Logout</a>
+                <button onclick="toggleTheme()">🌓</button>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:30px; max-width:500px; margin-left:auto; margin-right:auto;">
+            <h2>🎯 Set Monthly Budget</h2>
+
+            <form method="post">
+                <label>Month (YYYY-MM)</label>
+                <input type="text" name="month" placeholder="2026-02" required>
+
+                <label>Budget Amount</label>
+                <input type="number" step="0.01" name="amount" required>
+
+                <br><br>
+                <button>Save Budget</button>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
