@@ -30,21 +30,27 @@
 
     <div class="container">
         <h2>Dashboard</h2>
-        <div class="navbar">
-            <div>💰 Finance App</div>
-            <div>
+        <nav class="navbar">
+            <div class="nav-left">
+                <span class="logo">💰 Finance App</span>
+            </div>
+
+            <div class="nav-toggle" onclick="toggleMenu()">☰</div>
+
+            <div class="nav-links" id="navLinks">
                 <a href="/dashboard">Dashboard</a>
                 <a href="/add_income">Add Income</a>
                 <a href="/add_expense">Add Expense</a>
                 <a href="/set_budget">Set Budget</a>
+                <a href="/summary">Summary</a>
                 <a href="/profile">Profile</a>
                 <a href="/logout">Logout</a>
-                <a href="/summary">Summary</a>
-
+                <button onclick="toggleTheme()">🌓</button>
             </div>
-            <button onclick="toggleTheme()">🌓</button>
+        </nav>
+        
 
-        </div>
+
         <div class="card" style="margin-bottom:20px; border:1px solid #38bdf8;">
             <h3>🤖 AI Assistant</h3>
             <p>Hello {{ username }}, I analyzed your finances and prepared a smart report for you.</p>

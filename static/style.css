@@ -115,6 +115,75 @@ body {
     background-color: #a3adbd;
 }
 
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background: white;
+    border-bottom: 1px solid #ddd;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-weight: bold;
+    color: #2b8cff;
+    font-size: 18px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 12px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+
+.nav-links a:hover {
+    background: #f0f0f0;
+}
+
+.nav-toggle {
+    display: none;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* 📱 Mobile */
+@media (max-width: 768px) {
+    .nav-toggle {
+        display: block;
+    }
+
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 55px;
+        left: 0;
+        right: 0;
+        background: white;
+        flex-direction: column;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .nav-links.show {
+        display: flex;
+    }
+
+    .nav-links a {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+    }
+}
+
+
 @media (max-width: 600px) {
     .navbar {
         flex-direction: column;
