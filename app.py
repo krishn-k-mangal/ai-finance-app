@@ -1,18 +1,16 @@
-from flask import Flask, render_template, request, redirect, session, flash
+from flask import Flask, render_template, request, redirect, session, flash, Response, send_file
 import psycopg2
 import os
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
 
-# ------------------ DATABASE CONNECTION ------------------
+# ------------------ DATABASE ------------------
 
 def get_db_connection():
     database_url = os.environ.get("DATABASE_URL")
-    conn = psycopg2.connect(database_url)
-    return conn
-
-# ------------------ INIT DATABASE ------------------
+    return psycopg2.connect(database_url)
 
 def init_db():
     conn = get_db_connection()
@@ -60,7 +58,7 @@ def init_db():
     conn.commit()
     conn.close()
 
-# ------------------ AUTH ROUTES ------------------
+# ------------------ AUTH ------------------
 
 @app.route("/", methods=["GET", "POST"])
 def login_page():
@@ -70,12 +68,7 @@ def login_page():
 
         conn = get_db_connection()
         cursor = conn.cursor()
-
-        cursor.execute(
-            "SELECT id, username FROM users WHERE username = %s AND password = %s",
-            (username, password)
-        )
-
+        cursor.execute("SELECT id, username FROM users WHERE username = %s AND password = %s", (username, password))
         user = cursor.fetchone()
         conn.close()
 
@@ -99,10 +92,7 @@ def register_page():
         cursor = conn.cursor()
 
         try:
-            cursor.execute(
-                "INSERT INTO users (username, password) VALUES (%s, %s)",
-                (username, password)
-            )
+            cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, password))
             conn.commit()
         except:
             conn.rollback()
@@ -115,21 +105,96 @@ def register_page():
 
     return render_template("register.html")
 
-@app.route("/dashboard")
-def dashboard():
-    if "user_id" not in session:
-        return redirect("/")
-    return f"""
-    <h1>✅ Login successful</h1>
-    <p>User: {session['username']}</p>
-    <p>PostgreSQL is working correctly.</p>
-    <a href="/logout">Logout</a>
-    """
-
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect("/")
+
+# ------------------ DASHBOARD ------------------
+
+@app.route("/dashboard")
+def dashboard():
+    if "user_id" not in session:
+        return redirect("/")
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM income WHERE user_id = %s", (session["user_id"],))
+    incomes = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM expenses WHERE user_id = %s", (session["user_id"],))
+    expenses = cursor.fetchall()
+
+    cursor.execute("SELECT SUM(amount) FROM income WHERE user_id = %s", (session["user_id"],))
+    total_income = cursor.fetchone()[0] or 0
+
+    cursor.execute("SELECT SUM(amount) FROM expenses WHERE user_id = %s", (session["user_id"],))
+    total_expense = cursor.fetchone()[0] or 0
+
+    balance = total_income - total_expense
+
+    conn.close()
+
+    return render_template(
+        "dashboard.html",
+        username=session["username"],
+        incomes=incomes,
+        expenses=expenses,
+        total_income=total_income,
+        total_expense=total_expense,
+        balance=balance
+    )
+
+# ------------------ ADD INCOME ------------------
+
+@app.route("/add_income", methods=["GET", "POST"])
+def add_income():
+    if "user_id" not in session:
+        return redirect("/")
+
+    if request.method == "POST":
+        title = request.form["title"]
+        amount = float(request.form["amount"])
+        category = request.form["category"]
+        date = request.form["date"]
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO income (user_id, title, amount, category, date) VALUES (%s, %s, %s, %s, %s)",
+            (session["user_id"], title, amount, category, date)
+        )
+        conn.commit()
+        conn.close()
+        return redirect("/dashboard")
+
+    return render_template("add_income.html")
+
+# ------------------ ADD EXPENSE ------------------
+
+@app.route("/add_expense", methods=["GET", "POST"])
+def add_expense():
+    if "user_id" not in session:
+        return redirect("/")
+
+    if request.method == "POST":
+        title = request.form["title"]
+        amount = float(request.form["amount"])
+        category = request.form["category"]
+        date = request.form["date"]
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO expenses (user_id, title, amount, category, date) VALUES (%s, %s, %s, %s, %s)",
+            (session["user_id"], title, amount, category, date)
+        )
+        conn.commit()
+        conn.close()
+        return redirect("/dashboard")
+
+    return render_template("add_expense.html")
 
 # ------------------ RUN ------------------
 
