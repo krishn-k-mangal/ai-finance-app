@@ -38,7 +38,9 @@ body {
         font-size: 18px;
     }
 
-    h1, h2, h3 {
+    h1,
+    h2,
+    h3 {
         font-size: 1.3em;
     }
 
@@ -64,7 +66,9 @@ body {
 }
 
 @media (max-width: 600px) {
-    .navbar a, .navbar button {
+
+    .navbar a,
+    .navbar button {
         font-size: 16px;
         padding: 10px 14px;
     }
@@ -167,6 +171,13 @@ button:hover {
     background-color: #1d4ed8;
 }
 
+button,
+.btn {
+    padding: 10px 14px;
+    font-size: 16px;
+    border-radius: 6px;
+}
+
 
 
 /* Inputs */
@@ -265,4 +276,55 @@ tr:hover {
 /* Dark mode hover fix */
 [data-theme="dark"] tr:hover {
     background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* ===== Mobile Responsive ===== */
+@media (max-width: 768px) {
+
+    h1,
+    h2,
+    h3 {
+        font-size: 20px;
+    }
+
+    body {
+        font-size: 16px;
+    }
+
+    /* Make cards stack */
+    .row,
+    .flex,
+    .dashboard-top {
+        flex-direction: column !important;
+    }
+
+    /* Tables scrollable */
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    /* Buttons full width */
+    button,
+    .btn,
+    input[type="submit"] {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+    }
+
+    /* Forms */
+    input,
+    select {
+        width: 100%;
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    /* Charts */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
 }
