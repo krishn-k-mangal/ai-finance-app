@@ -11,6 +11,8 @@ import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+import numpy as np
 
 
 
@@ -173,6 +175,8 @@ def dashboard():
     conn.close()
     chart_path = generate_monthly_expense_chart(session["user_id"])
     pie_chart_path = generate_category_pie_chart(session["user_id"])
+    predicted_expense, prediction_note = predict_next_month_expense(session["user_id"])
+    health_score, health_message = calculate_financial_health_score(session["user_id"])
 
     return render_template(
         "dashboard.html",
@@ -188,6 +192,11 @@ def dashboard():
         over_budget=over_budget,
         chart_path=chart_path,
         pie_chart_path=pie_chart_path,
+        predicted_expense=predicted_expense,
+        prediction_note=prediction_note,
+        health_score=health_score,
+        health_message=health_message,
+
 
     )
 
@@ -467,6 +476,102 @@ def generate_category_pie_chart(user_id):
     plt.close()
 
     return path
+
+def get_monthly_expense_for_ml(user_id):
+    df = get_expense_dataframe(user_id)
+
+    if df.empty:
+        return None, None
+
+    df["amount"] = pd.to_numeric(df["amount"], errors="coerce")
+    df["date"] = pd.to_datetime(df["date"])
+
+    df["year_month"] = df["date"].dt.to_period("M")
+    monthly = df.groupby("year_month")["amount"].sum().reset_index()
+
+    monthly["time_index"] = range(1, len(monthly) + 1)
+
+    X = monthly[["time_index"]]
+    y = monthly["amount"]
+
+    return X, y
+
+def predict_next_month_expense(user_id):
+    X, y = get_monthly_expense_for_ml(user_id)
+
+    if X is None or len(y) == 0:
+        return None, "Not enough data to predict."
+
+    history = list(y)
+
+    if len(history) == 1:
+        return float(history[0]), "Only one month data. Prediction equals last month."
+
+    model = LinearRegression()
+    model.fit(X, y)
+
+    next_index = X["time_index"].max() + 1
+    predicted = model.predict([[next_index]])[0]
+
+    min_expense = min(history)
+    max_expense = max(history)
+    avg_expense = sum(history) / len(history)
+
+    smart_min = min(min_expense * 0.7, avg_expense * 0.5)
+    smart_max = max_expense * 1.5
+
+    if predicted < smart_min:
+        predicted = smart_min
+    if predicted > smart_max:
+        predicted = smart_max
+
+    return float(predicted), f"Prediction based on {len(history)} months of data."
+
+def calculate_financial_health_score(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT SUM(amount) FROM income WHERE user_id = %s", (user_id,))
+    total_income = cursor.fetchone()[0] or 0
+
+    cursor.execute("SELECT SUM(amount) FROM expenses WHERE user_id = %s", (user_id,))
+    total_expense = cursor.fetchone()[0] or 0
+
+    current_month = datetime.now().strftime("%Y-%m")
+
+    cursor.execute(
+        "SELECT amount FROM budget WHERE user_id = %s AND month = %s",
+        (user_id, current_month)
+    )
+    row = cursor.fetchone()
+    monthly_budget = row[0] if row else 0
+
+    conn.close()
+
+    if total_income == 0:
+        return 0, "No income data yet."
+
+    savings = total_income - total_expense
+    savings_ratio = savings / total_income
+
+    score = savings_ratio * 100
+
+    if monthly_budget > 0 and total_expense > monthly_budget:
+        over = (total_expense - monthly_budget) / monthly_budget
+        score -= over * 30
+
+    score = max(0, min(100, score))
+
+    if score >= 80:
+        msg = "Excellent! Your financial health is very good."
+    elif score >= 60:
+        msg = "Good. You are managing your finances well."
+    elif score >= 40:
+        msg = "Average. Try to save more."
+    else:
+        msg = "Poor. You should control your expenses."
+
+    return int(score), msg
 
 
 if __name__ == "__main__":
