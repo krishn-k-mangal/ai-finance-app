@@ -3,3 +3,4 @@ pandas
 matplotlib
 scikit-learn
 reportlab
+psycopg2-binary
