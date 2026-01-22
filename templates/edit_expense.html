@@ -22,20 +22,30 @@
     if (savedTheme === "dark") {
         document.documentElement.setAttribute("data-theme", "dark");
     }
+    function toggleMenu() {
+        document.getElementById("navLinks").classList.toggle("show");
+    }
+
 </script>
 
 <body>
     <div class="container">
 
-        <div class="navbar">
-            <div>🤖 AI Finance</div>
-            <div>
-                <a href="/dashboard">Dashboard</a>
-                <a href="/logout">Logout</a>
-                <button onclick="toggleTheme()">🌓</button>
+        <nav class="navbar">
+            <div class="nav-left">
+                <span class="logo">💰 Finance App</span>
             </div>
-            
 
+            <div class="nav-toggle" onclick="toggleMenu()">☰</div>
+
+            <div class="nav-links" id="navLinks">
+                <a href="/dashboard">Dashboard</a>
+                <a href="/profile">Profile</a>
+                <a href="/logout">Logout</a>
+                
+            </div>
+            <button onclick="toggleTheme()">🌓</button>
+        </nav>
         </div>
 
         <div class="card" style="margin-top:30px; max-width:450px; margin-left:auto; margin-right:auto;">
