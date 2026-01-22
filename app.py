@@ -119,7 +119,12 @@ def register_page():
 def dashboard():
     if "user_id" not in session:
         return redirect("/")
-    return render_template("dashboard.html", username=session["username"])
+    return f"""
+    <h1>✅ Login successful</h1>
+    <p>User: {session['username']}</p>
+    <p>PostgreSQL is working correctly.</p>
+    <a href="/logout">Logout</a>
+    """
 
 @app.route("/logout")
 def logout():
