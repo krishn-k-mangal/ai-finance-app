@@ -52,7 +52,7 @@ def init_db():
     """)
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS budgets (
+    CREATE TABLE IF NOT EXISTS budget (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         month TEXT,
         amount REAL,
@@ -321,7 +321,7 @@ def calculate_financial_health_score(user_id):
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # needed for session
-
+init_db()   
 # Function to connect to database
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH, timeout=10)
@@ -903,8 +903,7 @@ import os
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    init_db()
-
+    
     app.run(host="0.0.0.0", port=port)
 
 
