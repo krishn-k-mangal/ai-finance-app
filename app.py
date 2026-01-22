@@ -120,19 +120,44 @@ def dashboard():
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    # Get incomes
     cursor.execute("SELECT * FROM income WHERE user_id = %s", (session["user_id"],))
     incomes = cursor.fetchall()
 
+    # Get expenses
     cursor.execute("SELECT * FROM expenses WHERE user_id = %s", (session["user_id"],))
     expenses = cursor.fetchall()
 
+    # Total income
     cursor.execute("SELECT SUM(amount) FROM income WHERE user_id = %s", (session["user_id"],))
     total_income = cursor.fetchone()[0] or 0
 
+    # Total expense
     cursor.execute("SELECT SUM(amount) FROM expenses WHERE user_id = %s", (session["user_id"],))
     total_expense = cursor.fetchone()[0] or 0
 
     balance = total_income - total_expense
+
+    # Current month
+    current_month = datetime.now().strftime("%Y-%m")
+
+    # Get budget for this month
+    cursor.execute(
+        "SELECT amount FROM budget WHERE user_id = %s AND month = %s",
+        (session["user_id"], current_month)
+    )
+    row = cursor.fetchone()
+    monthly_budget = row[0] if row else 0
+
+    # This month expense
+    cursor.execute(
+        "SELECT SUM(amount) FROM expenses WHERE user_id = %s AND date LIKE %s",
+        (session["user_id"], current_month + "%")
+    )
+    month_expense = cursor.fetchone()[0] or 0
+
+    remaining_budget = monthly_budget - month_expense
+    over_budget = month_expense > monthly_budget and monthly_budget > 0
 
     conn.close()
 
@@ -143,7 +168,11 @@ def dashboard():
         expenses=expenses,
         total_income=total_income,
         total_expense=total_expense,
-        balance=balance
+        balance=balance,
+        monthly_budget=monthly_budget,
+        month_expense=month_expense,
+        remaining_budget=remaining_budget,
+        over_budget=over_budget
     )
 
 # ------------------ ADD INCOME ------------------
@@ -197,6 +226,44 @@ def add_expense():
     return render_template("add_expense.html")
 
 # ------------------ RUN ------------------
+@app.route("/set_budget", methods=["GET", "POST"])
+def set_budget():
+    if "user_id" not in session:
+        return redirect("/")
+
+    if request.method == "POST":
+        month = request.form["month"]
+        amount = float(request.form["amount"])
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Check if budget already exists
+        cursor.execute(
+            "SELECT id FROM budget WHERE user_id = %s AND month = %s",
+            (session["user_id"], month)
+        )
+        existing = cursor.fetchone()
+
+        if existing:
+            # Update
+            cursor.execute(
+                "UPDATE budget SET amount = %s WHERE user_id = %s AND month = %s",
+                (amount, session["user_id"], month)
+            )
+        else:
+            # Insert
+            cursor.execute(
+                "INSERT INTO budget (user_id, month, amount) VALUES (%s, %s, %s)",
+                (session["user_id"], month, amount)
+            )
+
+        conn.commit()
+        conn.close()
+        return redirect("/dashboard")
+
+    # You already have HTML file, so just render it
+    return render_template("set_budget.html")
 
 if __name__ == "__main__":
     init_db()
