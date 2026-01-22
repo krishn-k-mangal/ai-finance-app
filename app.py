@@ -177,7 +177,8 @@ def dashboard():
     pie_chart_path = generate_category_pie_chart(session["user_id"])
     predicted_expense, prediction_note = predict_next_month_expense(session["user_id"])
     health_score, health_message = calculate_financial_health_score(session["user_id"])
-
+    print("exp",expenses)
+    print("inc", incomes)
     return render_template(
         "dashboard.html",
         username=session["username"],
@@ -572,6 +573,38 @@ def calculate_financial_health_score(user_id):
         msg = "Poor. You should control your expenses."
 
     return int(score), msg
+
+@app.route("/profile")
+def profile():
+    if "user_id" not in session:
+        return redirect("/")
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Get user info
+    cursor.execute("SELECT username FROM users WHERE id = %s", (session["user_id"],))
+    user = cursor.fetchone()
+
+    # Total income
+    cursor.execute("SELECT SUM(amount) FROM income WHERE user_id = %s", (session["user_id"],))
+    total_income = cursor.fetchone()[0] or 0
+
+    # Total expense
+    cursor.execute("SELECT SUM(amount) FROM expenses WHERE user_id = %s", (session["user_id"],))
+    total_expense = cursor.fetchone()[0] or 0
+
+    balance = total_income - total_expense
+
+    conn.close()
+
+    return render_template(
+        "profile.html",
+        username=user[0],
+        total_income=total_income,
+        total_expense=total_expense,
+        balance=balance
+    )
 
 
 if __name__ == "__main__":
