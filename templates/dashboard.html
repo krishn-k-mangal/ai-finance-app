@@ -23,6 +23,12 @@
     if (savedTheme === "dark") {
         document.documentElement.setAttribute("data-theme", "dark");
     }
+
+    function toggleMenu() {
+        document.getElementById("navLinks").classList.toggle("show");
+    }
+
+
 </script>
 
 
@@ -48,7 +54,7 @@
                 <button onclick="toggleTheme()">🌓</button>
             </div>
         </nav>
-        
+
 
 
         <div class="card" style="margin-bottom:20px; border:1px solid #38bdf8;">
