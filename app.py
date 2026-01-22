@@ -265,6 +265,92 @@ def set_budget():
     # You already have HTML file, so just render it
     return render_template("set_budget.html")
 
+
+@app.route("/summary")
+def summary():
+    if "user_id" not in session:
+        return redirect("/")
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    now = datetime.now()
+    this_month = now.strftime("%Y-%m")
+
+    first_day = now.replace(day=1)
+    last_month_date = first_day - timedelta(days=1)
+    last_month = last_month_date.strftime("%Y-%m")
+
+    # This month expense
+    cursor.execute(
+        "SELECT SUM(amount) FROM expenses WHERE user_id = %s AND date LIKE %s",
+        (session["user_id"], this_month + "%")
+    )
+    this_month_total = cursor.fetchone()[0] or 0
+
+    # Last month expense
+    cursor.execute(
+        "SELECT SUM(amount) FROM expenses WHERE user_id = %s AND date LIKE %s",
+        (session["user_id"], last_month + "%")
+    )
+    last_month_total = cursor.fetchone()[0] or 0
+
+    conn.close()
+
+    diff = this_month_total - last_month_total
+
+    if last_month_total > 0:
+        percent_change = (diff / last_month_total) * 100
+    else:
+        percent_change = 0
+
+    if diff > 0:
+        message = "📈 Your spending increased compared to last month."
+    elif diff < 0:
+        message = "📉 Good! Your spending decreased."
+    else:
+        message = "➡️ Your spending is the same as last month."
+
+    return render_template(
+        "summary.html",
+        this_month_total=this_month_total,
+        last_month_total=last_month_total,
+        diff=diff,
+        percent_change=percent_change,
+        message=message,
+        this_month=this_month,
+        last_month=last_month
+    )
+@app.route("/export_expenses")
+def export_expenses():
+    if "user_id" not in session:
+        return redirect("/")
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT title, amount, category, date FROM expenses WHERE user_id = %s",
+        (session["user_id"],)
+    )
+    rows = cursor.fetchall()
+    conn.close()
+
+    def generate():
+        yield "Title,Amount,Category,Date\n"
+        for row in rows:
+            yield f"{row[0]},{row[1]},{row[2]},{row[3]}\n"
+
+    return Response(
+        generate(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=expenses.csv"}
+    )
+
+
+
+
+
 if __name__ == "__main__":
     init_db()
     port = int(os.environ.get("PORT", 5000))
