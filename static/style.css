@@ -310,3 +310,28 @@ th {
         font-size: 18px;
     }
 }
+
+@media (max-width: 768px) {
+    .nav-right {
+        gap: 6px;
+    }
+
+    .theme-btn {
+        padding: 8px 10px;
+        font-size: 16px;
+    }
+}
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.theme-btn {
+    background: #2563eb;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+}
