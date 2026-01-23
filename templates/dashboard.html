@@ -185,7 +185,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <h3>💰 Income</h3>
             <a href="/add_income">
-                <button class="btn btn-small" >Add</button>
+                <button class="btn btn-small">Add</button>
             </a>
         </div>
         <div class="table-wrapper">
@@ -225,8 +225,10 @@
                 <input type="date" name="from_date">
                 <input type="date" name="to_date">
             </div>
-            <button class="reset-btn" type="submit">Filter</button>
-            <a href="/dashboard"><button class="reset-btn" type="button">Reset</button></a>
+            <div  class="btn-group" >
+                <button class="filter-btn" type="submit">Filter</button>
+                <a href="/dashboard"><button class="reset-btn" type="button">Reset</button></a>
+            </div>
         </form>
 
 
@@ -234,7 +236,7 @@
             <h3>💸 Expenses</h3>
             <div class="btn-group">
                 <a href="/add_expense">
-                    <button  class="btn btn-small"  style="margin:0lh;">Add</button>
+                    <button class="btn btn-small" style="margin:0lh;">Add</button>
                 </a>
                 <a href="/export_expenses">
                     <button class="btn btn-small">📥CSV</button>
