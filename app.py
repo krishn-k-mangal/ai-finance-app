@@ -89,7 +89,7 @@ def login_page():
 
         if user:
             session["user_id"] = user['id']
-            session["username"] = user[1]
+            session["username"] = user["username"]
             return redirect("/dashboard")
         else:
             flash("Invalid username or password")
@@ -143,14 +143,15 @@ def dashboard():
     cursor.execute("SELECT * FROM expenses WHERE user_id = %s", (session["user_id"],))
     expenses = cursor.fetchall()
 
-
     # Total income
-    cursor.execute("SELECT SUM(amount) FROM income WHERE user_id = %s", (session["user_id"],))
-    total_income = cursor.fetchone()[0] or 0
+    cursor.execute("SELECT SUM(amount) AS total FROM income WHERE user_id = %s", (session["user_id"],))
+    total_income_row = cursor.fetchone()
+    total_income = total_income_row["total"] or 0
 
     # Total expense
-    cursor.execute("SELECT SUM(amount) FROM expenses WHERE user_id = %s", (session["user_id"],))
-    total_expense = cursor.fetchone()[0] or 0
+    cursor.execute("SELECT SUM(amount) AS total FROM expenses WHERE user_id = %s", (session["user_id"],))
+    total_expense_row = cursor.fetchone()
+    total_expense = total_expense_row["total"] or 0
 
     balance = total_income - total_expense
 
@@ -163,28 +164,32 @@ def dashboard():
         (session["user_id"], current_month)
     )
     row = cursor.fetchone()
-    monthly_budget = row[0] if row else 0
+    monthly_budget = row["amount"] if row else 0
 
     # This month expense
     cursor.execute(
-        "SELECT SUM(amount) FROM expenses WHERE user_id = %s AND date LIKE %s",
+        "SELECT SUM(amount) AS total FROM expenses WHERE user_id = %s AND date LIKE %s",
         (session["user_id"], current_month + "%")
     )
-    month_expense = cursor.fetchone()[0] or 0
+    month_row = cursor.fetchone()
+    month_expense = month_row["total"] or 0
 
     remaining_budget = monthly_budget - month_expense
     over_budget = month_expense > monthly_budget and monthly_budget > 0
 
     conn.close()
+
     chart_path = generate_monthly_expense_chart(session["user_id"])
     pie_chart_path = generate_category_pie_chart(session["user_id"])
     predicted_expense, prediction_note = predict_next_month_expense(session["user_id"])
     health_score, health_message = calculate_financial_health_score(session["user_id"])
-    print("exp",expenses)
-    print("inc", incomes)
+
+    print("EXPENSES:", expenses)
+    print("INCOMES:", incomes)
+
     return render_template(
         "dashboard.html",
-        username=session["username"],
+        username=session.get("username"),
         incomes=incomes,
         expenses=expenses,
         total_income=total_income,
@@ -200,8 +205,6 @@ def dashboard():
         prediction_note=prediction_note,
         health_score=health_score,
         health_message=health_message,
-
-
     )
 
 # ------------------ ADD INCOME ------------------
