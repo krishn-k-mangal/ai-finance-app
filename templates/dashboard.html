@@ -2,51 +2,52 @@
 <html>
 
 <head>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
 
-<script>
-    function toggleTheme() {
-        let current = document.documentElement.getAttribute("data-theme");
-        if (current === "dark") {
-            document.documentElement.removeAttribute("data-theme");
-            localStorage.setItem("theme", "light");
-        } else {
-            document.documentElement.setAttribute("data-theme", "dark");
-            localStorage.setItem("theme", "dark");
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashboard</title>
+        <link rel="stylesheet" href="/static/style.css">
+    </head>
+
+    <script>
+        function toggleTheme() {
+            let current = document.documentElement.getAttribute("data-theme");
+            if (current === "dark") {
+                document.documentElement.removeAttribute("data-theme");
+                localStorage.setItem("theme", "light");
+            } else {
+                document.documentElement.setAttribute("data-theme", "dark");
+                localStorage.setItem("theme", "dark");
+            }
         }
-    }
 
-    // Load saved theme
-    let savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
-        document.documentElement.setAttribute("data-theme", "dark");
-    }
+        // Load saved theme
+        let savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "dark") {
+            document.documentElement.setAttribute("data-theme", "dark");
+        }
 
-    function toggleMenu() {
-        document.getElementById("navLinks").classList.toggle("show");
-    }
+        function toggleMenu() {
+            document.getElementById("navLinks").classList.toggle("show");
+        }
 
 
-</script>
+    </script>
 
 
 <body>
 
     <div class="container">
         <div style="justify-content: space-around;">
-        <h2>Dashboard</h2>
-        <button class="btn btn-small" onclick="toggleTheme()">🌓</button>
+            <h2>Dashboard</h2>
+            <button class="btn btn-small" onclick="toggleTheme()">🌓</button>
         </div>
         <nav class="navbar">
             <div class="nav-left">
                 <span class="logo">💰 Finance App</span>
             </div>
-            
+
             <div class="nav-toggle" onclick="toggleMenu()">☰</div>
 
             <div class="nav-links" id="navLinks">
@@ -213,6 +214,23 @@
                 {% endfor %}
             </table>
         </div>
+        <!-- 📱 Mobile Income Cards -->
+        <div class="mobile-list">
+            {% for i in incomes %}
+            <div class="mobile-item">
+                <h4>{{ i[1] }}</h4>
+                <p>💰 Amount: ₹ {{ i[2] }}</p>
+                <p>📁 Category: {{ i[3] }}</p>
+                <p>📅 Date: {{ i[4] }}</p>
+
+                <div class="mobile-actions">
+                    <a href="/edit_income/{{ i[0] }}">✏️ Edit</a>
+                    <a href="/delete_income/{{ i[0] }}">🗑️ Delete</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
         <form method="get" action="/dashboard" style="margin-bottom:10px;">
             <input type="text" name="q" placeholder="Search by title or category">
             <button class="reset-btn" type="submit">Search</button>
@@ -223,7 +241,7 @@
                 <input type="date" name="from_date">
                 <input type="date" name="to_date">
             </div>
-            <div  class="btn-group" >
+            <div class="btn-group">
                 <button class="filter-btn" type="submit">Filter</button>
                 <a href="/dashboard"><button class="reset-btn" type="button">Reset</button></a>
             </div>
@@ -270,6 +288,23 @@
                 {% endfor %}
             </table>
         </div>
+        <!-- 📱 Mobile Expense Cards -->
+        <div class="mobile-list">
+            {% for e in expenses %}
+            <div class="mobile-item">
+                <h4>{{ e[1] }}</h4>
+                <p>💸 Amount: ₹ {{ e[2] }}</p>
+                <p>📁 Category: {{ e[3] }}</p>
+                <p>📅 Date: {{ e[4] }}</p>
+
+                <div class="mobile-actions">
+                    <a href="/edit_expense/{{ e[0] }}">✏️ Edit</a>
+                    <a href="/delete_expense/{{ e[0] }}">🗑️ Delete</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
     </div>
 
 </body>

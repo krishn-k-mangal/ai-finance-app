@@ -263,3 +263,47 @@ th {
         font-size: 16px;
     }
 }
+
+/* ===== Mobile Card View for Tables ===== */
+.mobile-list {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .table-wrapper {
+        display: none;
+    }
+
+    .mobile-list {
+        display: block;
+    }
+
+    .mobile-item {
+        background: var(--card-color);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+
+    .mobile-item h4 {
+        margin: 0 0 6px 0;
+        color: #38bdf8;
+    }
+
+    .mobile-item p {
+        margin: 4px 0;
+        font-size: 14px;
+    }
+
+    .mobile-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+
+    .mobile-actions a {
+        text-decoration: none;
+        font-size: 18px;
+    }
+}
