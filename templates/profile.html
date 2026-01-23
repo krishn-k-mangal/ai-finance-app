@@ -2,28 +2,30 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
     <link rel="stylesheet" href="/static/style.css">
 
 </head>
 <script>
-function toggleTheme() {
-    let current = document.documentElement.getAttribute("data-theme");
-    if (current === "dark") {
-        document.documentElement.removeAttribute("data-theme");
-        localStorage.setItem("theme", "light");
-    } else {
-        document.documentElement.setAttribute("data-theme", "dark");
-        localStorage.setItem("theme", "dark");
+    function toggleTheme() {
+        let current = document.documentElement.getAttribute("data-theme");
+        if (current === "dark") {
+            document.documentElement.removeAttribute("data-theme");
+            localStorage.setItem("theme", "light");
+        } else {
+            document.documentElement.setAttribute("data-theme", "dark");
+            localStorage.setItem("theme", "dark");
+        }
     }
-}
 
-// Load saved theme
-let savedTheme = localStorage.getItem("theme");
-if (savedTheme === "dark") {
-    document.documentElement.setAttribute("data-theme", "dark");
-}
-function toggleMenu() {
+    // Load saved theme
+    let savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+    }
+    function toggleMenu() {
         document.getElementById("navLinks").classList.toggle("show");
     }
 </script>
@@ -40,7 +42,7 @@ function toggleMenu() {
 
             <div class="nav-links" id="navLinks">
                 <a href="/dashboard">Dashboard</a>
-                
+
                 <a href="/logout">Logout</a>
 
             </div>
