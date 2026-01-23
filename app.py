@@ -428,6 +428,117 @@ def export_expenses_pdf():
 
     return send_file(file_path, as_attachment=True)
 
+@app.route("/delete_expense/<int:expense_id>")
+def delete_expense(expense_id):
+    if "user_id" not in session:
+        return redirect("/")
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM expenses WHERE id = %s AND user_id = %s",
+        (expense_id, session["user_id"])
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/dashboard")
+
+@app.route("/delete_income/<int:income_id>")
+def delete_income(income_id):
+    if "user_id" not in session:
+        return redirect("/")
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM income WHERE id = %s AND user_id = %s",
+        (income_id, session["user_id"])
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/dashboard")
+
+@app.route("/edit_expense/<int:expense_id>", methods=["GET", "POST"])
+def edit_expense(expense_id):
+    if "user_id" not in session:
+        return redirect("/")
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Fetch expense
+    cursor.execute(
+        "SELECT * FROM expenses WHERE id = %s AND user_id = %s",
+        (expense_id, session["user_id"])
+    )
+    expense = cursor.fetchone()
+
+    if not expense:
+        conn.close()
+        return redirect("/dashboard")
+
+    if request.method == "POST":
+        title = request.form["title"]
+        amount = request.form["amount"]
+        category = request.form["category"]
+        date = request.form["date"]
+
+        cursor.execute(
+            "UPDATE expenses SET title = %s, amount = %s, category = %s, date = %s WHERE id = %s AND user_id = %s",
+            (title, amount, category, date, expense_id, session["user_id"])
+        )
+
+        conn.commit()
+        conn.close()
+        return redirect("/dashboard")
+
+    conn.close()
+    return render_template("edit_expense.html", expense=expense)
+
+
+@app.route("/edit_income/<int:income_id>", methods=["GET", "POST"])
+def edit_income(income_id):
+    if "user_id" not in session:
+        return redirect("/")
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT * FROM income WHERE id = %s AND user_id = %s",
+        (income_id, session["user_id"])
+    )
+    income = cursor.fetchone()
+
+    if not income:
+        conn.close()
+        return redirect("/dashboard")
+
+    if request.method == "POST":
+        title = request.form["title"]
+        amount = request.form["amount"]
+        category = request.form["category"]
+        date = request.form["date"]
+
+        cursor.execute(
+            "UPDATE income SET title = %s, amount = %s, category = %s, date = %s WHERE id = %s AND user_id = %s",
+            (title, amount, category, date, income_id, session["user_id"])
+        )
+
+        conn.commit()
+        conn.close()
+        return redirect("/dashboard")
+
+    conn.close()
+    return render_template("edit_income.html", income=income)
+
+
 def get_expense_dataframe(user_id):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -612,12 +723,14 @@ def profile():
     user = cursor.fetchone()
 
     # Total income
-    cursor.execute("SELECT SUM(amount) FROM income WHERE user_id = %s", (session["user_id"],))
-    total_income = cursor.fetchone()[0] or 0
+    cursor.execute("SELECT SUM(amount) AS total FROM income WHERE user_id = %s", (session["user_id"],))
+    income_row = cursor.fetchone()
+    total_income = income_row["total"] or 0
 
     # Total expense
-    cursor.execute("SELECT SUM(amount) FROM expenses WHERE user_id = %s", (session["user_id"],))
-    total_expense = cursor.fetchone()[0] or 0
+    cursor.execute("SELECT SUM(amount) AS total FROM expenses WHERE user_id = %s", (session["user_id"],))
+    expense_row = cursor.fetchone()
+    total_expense = expense_row["total"] or 0
 
     balance = total_income - total_expense
 
@@ -625,12 +738,11 @@ def profile():
 
     return render_template(
         "profile.html",
-        username=user[0],
+        username=user["username"],
         total_income=total_income,
         total_expense=total_expense,
         balance=balance
     )
-
 
 if __name__ == "__main__":
     init_db()
