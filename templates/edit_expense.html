@@ -33,20 +33,23 @@
 <body>
     <div class="container">
 
-        <nav class="navbar">
+       <nav class="navbar">
             <div class="nav-left">
                 <span class="logo">💰 Finance App</span>
             </div>
-            <button class="btn btn-small" onclick="toggleTheme()">🌓</button>
-            <div class="nav-toggle" onclick="toggleMenu()">☰</div>
 
-            <div class="nav-links" id="navLinks">
-                <a href="/dashboard">Dashboard</a>
-                <a href="/profile">Profile</a>
-                <a href="/logout">Logout</a>
+            <div class="nav-right">
+                <div class="nav-toggle" onclick="toggleMenu()">☰</div>
 
+                <div class="nav-links" id="navLinks">
+                    <a href="/dashboard">Dashboard</a>
+                    <a href="/summary">Summary</a>
+                    <a href="/profile">Profile</a>
+                    <a href="/logout">Logout</a>
+                </div>
+
+                <button class="theme-btn" onclick="toggleTheme()">🌓</button>
             </div>
-
         </nav>
     </div>
 
