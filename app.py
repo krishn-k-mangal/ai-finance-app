@@ -21,9 +21,11 @@ app.secret_key = "supersecretkey"
 
 # ------------------ DATABASE ------------------
 
+from psycopg2.extras import RealDictCursor
+
 def get_db_connection():
     database_url = os.environ.get("DATABASE_URL")
-    return psycopg2.connect(database_url)
+    return psycopg2.connect(database_url, cursor_factory=RealDictCursor)
 
 def init_db():
     conn = get_db_connection()
@@ -140,6 +142,7 @@ def dashboard():
     # Get expenses
     cursor.execute("SELECT * FROM expenses WHERE user_id = %s", (session["user_id"],))
     expenses = cursor.fetchall()
+
 
     # Total income
     cursor.execute("SELECT SUM(amount) FROM income WHERE user_id = %s", (session["user_id"],))
