@@ -319,21 +319,23 @@ def summary():
         "SELECT SUM(amount) FROM expenses WHERE user_id = %s AND date LIKE %s",
         (session["user_id"], this_month + "%")
     )
-    this_month_total = cursor.fetchone()[0] or 0
+    this_month_total = cursor.fetchone()
+    this_month_total_is = this_month_total["total"] or 0
 
     # Last month expense
     cursor.execute(
         "SELECT SUM(amount) FROM expenses WHERE user_id = %s AND date LIKE %s",
         (session["user_id"], last_month + "%")
     )
-    last_month_total = cursor.fetchone()[0] or 0
+    last_month_total = cursor.fetchone()
+    last_month_total_is  = last_month_total["total"] or 0
 
     conn.close()
 
-    diff = this_month_total - last_month_total
+    diff = this_month_total_is - last_month_total_is
 
-    if last_month_total > 0:
-        percent_change = (diff / last_month_total) * 100
+    if last_month_total_is > 0:
+        percent_change = (diff / last_month_total_is) * 100
     else:
         percent_change = 0
 
