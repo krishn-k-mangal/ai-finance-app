@@ -373,7 +373,7 @@ def export_expenses():
     def generate():
         yield "Title,Amount,Category,Date\n"
         for row in rows:
-            yield f"{row[0]},{row[1]},{row[2]},{row[3]}\n"
+            yield f"{row['title']},{row['amount']},{row['category']},{row['date']}\n"
 
     return Response(
         generate(),
@@ -538,12 +538,18 @@ def calculate_financial_health_score(user_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT SUM(amount) FROM income WHERE user_id = %s", (user_id,))
-    total_income = cursor.fetchone()[0] or 0
+    # Total income
+    cursor.execute("SELECT SUM(amount) AS total FROM income WHERE user_id = %s", (user_id,))
+    income_row = cursor.fetchone()
+    total_income = income_row["total"] or 0
 
-    cursor.execute("SELECT SUM(amount) FROM expenses WHERE user_id = %s", (user_id,))
-    total_expense = cursor.fetchone()[0] or 0
+    # Total expense
+    cursor.execute("SELECT SUM(amount) AS total FROM expenses WHERE user_id = %s", (user_id,))
+    expense_row = cursor.fetchone()
+    total_expense = expense_row["total"] or 0
 
+    # Current month budget
+    from datetime import datetime
     current_month = datetime.now().strftime("%Y-%m")
 
     cursor.execute(
@@ -551,24 +557,32 @@ def calculate_financial_health_score(user_id):
         (user_id, current_month)
     )
     row = cursor.fetchone()
-    monthly_budget = row[0] if row else 0
+    monthly_budget = row["amount"] if row else 0
 
     conn.close()
 
+    # If no income, cannot calculate
     if total_income == 0:
         return 0, "No income data yet."
 
     savings = total_income - total_expense
     savings_ratio = savings / total_income
 
+    # Base score
     score = savings_ratio * 100
 
+    # Budget penalty
     if monthly_budget > 0 and total_expense > monthly_budget:
         over = (total_expense - monthly_budget) / monthly_budget
         score -= over * 30
 
-    score = max(0, min(100, score))
+    # Clamp score
+    if score < 0:
+        score = 0
+    if score > 100:
+        score = 100
 
+    # Message
     if score >= 80:
         msg = "Excellent! Your financial health is very good."
     elif score >= 60:
