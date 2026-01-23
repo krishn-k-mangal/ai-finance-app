@@ -229,3 +229,35 @@ th {
         grid-template-columns: 1fr;
     }
 }
+
+/* ===== MOBILE BUTTON FIX ===== */
+@media (max-width: 600px) {
+
+    button, .btn, a.btn {
+        width: 100%;
+        padding: 12px 14px;
+        font-size: 16px;
+        border-radius: 10px;
+    }
+
+    /* Small action buttons (Add, CSV, PDF) */
+    .btn-small, .action-btn {
+        width: auto;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    /* Group buttons stack nicely */
+    .btn-group {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    /* Fix search & filter buttons */
+    .search-btn, .filter-btn, .reset-btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+    }
+}
