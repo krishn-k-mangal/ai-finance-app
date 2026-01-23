@@ -215,21 +215,23 @@
             </table>
         </div>
         <!-- 📱 Mobile Income Cards -->
+        <!-- 📱 Mobile Income Cards -->
         <div class="mobile-list">
             {% for i in incomes %}
             <div class="mobile-item">
-                <h4>{{ i[2] }}</h4> <!-- title -->
-                <p>💰 Amount: ₹ {{ i[3] }}</p>
-                <p>📁 Category: {{ i[4] }}</p>
-                <p>📅 Date: {{ i[5] }}</p>
+                <h4>{{ i["title"] }}</h4>
+                <p>💰 Amount: ₹ {{ i["amount"] }}</p>
+                <p>📁 Category: {{ i["category"] }}</p>
+                <p>📅 Date: {{ i["date"] }}</p>
 
                 <div class="mobile-actions">
-                    <a href="/edit_income/{{ i[0] }}">✏️</a>
-                    <a href="/delete_income/{{ i[0] }}">🗑️</a>
+                    <a href="/edit_income/{{ i['id'] }}">✏️</a>
+                    <a href="/delete_income/{{ i['id'] }}">🗑️</a>
                 </div>
             </div>
             {% endfor %}
         </div>
+
 
 
         <form method="get" action="/dashboard" style="margin-bottom:10px;">
@@ -290,21 +292,23 @@
             </table>
         </div>
         <!-- 📱 Mobile Expense Cards -->
+        <!-- 📱 Mobile Expense Cards -->
         <div class="mobile-list">
             {% for e in expenses %}
             <div class="mobile-item">
-                <h4>{{ e[2] }}</h4> <!-- title -->
-                <p>💸 Amount: ₹ {{ e[3] }}</p>
-                <p>📁 Category: {{ e[4] }}</p>
-                <p>📅 Date: {{ e[5] }}</p>
+                <h4>{{ e["title"] }}</h4>
+                <p>💸 Amount: ₹ {{ e["amount"] }}</p>
+                <p>📁 Category: {{ e["category"] }}</p>
+                <p>📅 Date: {{ e["date"] }}</p>
 
                 <div class="mobile-actions">
-                    <a href="/edit_expense/{{ e[0] }}">✏️</a>
-                    <a href="/delete_expense/{{ e[0] }}">🗑️</a>
+                    <a href="/edit_expense/{{ e['id'] }}">✏️</a>
+                    <a href="/delete_expense/{{ e['id'] }}">🗑️</a>
                 </div>
             </div>
             {% endfor %}
         </div>
+
     </div>
 </body>
 
