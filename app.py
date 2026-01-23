@@ -88,7 +88,7 @@ def login_page():
         conn.close()
 
         if user:
-            session["user_id"] = user[0]
+            session["user_id"] = user['id']
             session["username"] = user[1]
             return redirect("/dashboard")
         else:
