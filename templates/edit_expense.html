@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Expense</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
@@ -37,40 +37,40 @@
             <div class="nav-left">
                 <span class="logo">💰 Finance App</span>
             </div>
-
+            <button class="btn btn-small" onclick="toggleTheme()">🌓</button>
             <div class="nav-toggle" onclick="toggleMenu()">☰</div>
 
             <div class="nav-links" id="navLinks">
                 <a href="/dashboard">Dashboard</a>
                 <a href="/profile">Profile</a>
                 <a href="/logout">Logout</a>
-                
+
             </div>
-            <button onclick="toggleTheme()">🌓</button>
+
         </nav>
-        </div>
+    </div>
 
-        <div class="card" style="margin-top:30px; max-width:450px; margin-left:auto; margin-right:auto;">
+    <div class="card" style="margin-top:30px; max-width:450px; margin-left:auto; margin-right:auto;">
 
-            <h2>✏️ Edit Expense</h2>
+        <h2>✏️ Edit Expense</h2>
 
-            <form method="post">
-                <label>Title</label>
-                <input type="text" name="title" value="{{ expense['title'] }}" required>
+        <form method="post">
+            <label>Title</label>
+            <input type="text" name="title" value="{{ expense['title'] }}" required>
 
-                <label>Amount</label>
-                <input type="number" step="0.01" name="amount" value="{{ expense['amount'] }}" required>
+            <label>Amount</label>
+            <input type="number" step="0.01" name="amount" value="{{ expense['amount'] }}" required>
 
-                <label>Category</label>
-                <input type="text" name="category" value="{{ expense['category'] }}" required>
+            <label>Category</label>
+            <input type="text" name="category" value="{{ expense['category'] }}" required>
 
-                <label>Date</label>
-                <input type="date" name="date" value="{{ expense['date'] }}" required>
+            <label>Date</label>
+            <input type="date" name="date" value="{{ expense['date'] }}" required>
 
-                <br><br>
-                <button>Update Expense</button>
-            </form>
-        </div>
+            <br><br>
+            <button>Update Expense</button>
+        </form>
+    </div>
 
     </div>
 </body>
