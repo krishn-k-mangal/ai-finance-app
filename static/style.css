@@ -231,36 +231,39 @@ th {
 }
 
 /* ===== MOBILE BUTTON FIX ===== */
+/* ===== MOBILE BUTTON FIX (CLEAN) ===== */
 @media (max-width: 600px) {
 
-    button, .btn, a.btn {
+    /* Big main buttons only */
+    .btn-full,
+    .search-btn,
+    .filter-btn,
+    .reset-btn,
+    form button {
         width: 100%;
         padding: 12px 14px;
         font-size: 16px;
         border-radius: 10px;
     }
 
-    /* Small action buttons (Add, CSV, PDF) */
-    .btn-small, .action-btn {
-        width: auto;
-        padding: 8px 12px;
-        font-size: 14px;
+    /* Small action buttons (Add, CSV, PDF, Edit, Delete) */
+    .btn-small,
+    .action-btn {
+        width: auto !important;
+        padding: 6px 10px !important;
+        font-size: 13px !important;
     }
 
-    /* Group buttons stack nicely */
+    /* Button groups stay in row */
     .btn-group {
-        display: grid;
-        grid-template-columns: 1fr;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
     }
 
-    /* Fix search & filter buttons */
-    .search-btn, .filter-btn, .reset-btn {
-        width: 100%;
-        padding: 12px;
-        font-size: 16px;
+    /* Tables scroll */
+    .table-wrapper {
+        overflow-x: auto;
     }
 }
 
