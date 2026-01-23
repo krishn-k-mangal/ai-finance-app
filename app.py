@@ -409,7 +409,12 @@ def export_expenses_pdf():
     data = [["Title", "Amount", "Category", "Date"]]
 
     for row in rows:
-        data.append([row[0], str(row[1]), row[2], row[3]])
+        data.append([
+            row["title"],
+            str(row["amount"]),
+            row["category"],
+            row["date"]
+        ])
 
     table = Table(data)
     table.setStyle(TableStyle([
