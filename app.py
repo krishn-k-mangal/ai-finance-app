@@ -315,20 +315,24 @@ def summary():
     last_month = last_month_date.strftime("%Y-%m")
 
     # This month expense
-    cursor.execute(
-        "SELECT SUM(amount) FROM expenses WHERE user_id = %s AND date LIKE %s",
-        (session["user_id"], this_month + "%")
-    )
+    cursor.execute("""
+        SELECT SUM(amount) AS total
+        FROM expenses
+        WHERE user_id = %s AND date LIKE %s
+    """, (session["user_id"], this_month + "%"))
+
     this_month_total = cursor.fetchone()
     this_month_total_is = this_month_total["total"] or 0
 
     # Last month expense
-    cursor.execute(
-        "SELECT SUM(amount) FROM expenses WHERE user_id = %s AND date LIKE %s",
-        (session["user_id"], last_month + "%")
-    )
+    cursor.execute("""
+        SELECT SUM(amount) AS total
+        FROM expenses
+        WHERE user_id = %s AND date LIKE %s
+    """, (session["user_id"], last_month + "%"))
+
     last_month_total = cursor.fetchone()
-    last_month_total_is  = last_month_total["total"] or 0
+    last_month_total_is = last_month_total["total"] or 0
 
     conn.close()
 
@@ -348,8 +352,8 @@ def summary():
 
     return render_template(
         "summary.html",
-        this_month_total=this_month_total,
-        last_month_total=last_month_total,
+        this_month_total=this_month_total_is,
+        last_month_total=last_month_total_is,
         diff=diff,
         percent_change=percent_change,
         message=message,
