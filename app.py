@@ -175,7 +175,13 @@ def dashboard():
     month_expense = month_row["total"] or 0
 
     remaining_budget = monthly_budget - month_expense
-    over_budget = month_expense > monthly_budget and monthly_budget > 0
+
+    if monthly_budget == 0:
+        budget_status = "not_set"
+    elif month_expense > monthly_budget:
+        budget_status = "over"
+    else:
+        budget_status = "under"
 
     conn.close()
 
@@ -184,9 +190,7 @@ def dashboard():
     predicted_expense, prediction_note = predict_next_month_expense(session["user_id"])
     health_score, health_message = calculate_financial_health_score(session["user_id"])
 
-    print("EXPENSES:", expenses)
-    print("INCOMES:", incomes)
-
+    
     return render_template(
         "dashboard.html",
         username=session.get("username"),
@@ -198,7 +202,7 @@ def dashboard():
         monthly_budget=monthly_budget,
         month_expense=month_expense,
         remaining_budget=remaining_budget,
-        over_budget=over_budget,
+        budget_status=budget_status,
         chart_path=chart_path,
         pie_chart_path=pie_chart_path,
         predicted_expense=predicted_expense,

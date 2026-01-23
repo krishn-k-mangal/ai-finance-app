@@ -108,11 +108,16 @@
             <p>{{ used_percent | round(1) }}% used</p>
             {% endif %}
 
-            {% if over_budget %}
-            <p style="color:#ff4d4d; font-weight:bold;">⚠️ Over budget!</p>
+            {% if budget_status == "not_set" %}
+            <p style="color:#facc15;">⚠️ You have not set a budget for this month.</p>
+
+            {% elif budget_status == "over" %}
+            <p style="color:#ff4d4d; font-weight:bold;">❌ You are over budget!</p>
+
             {% else %}
-            <p style="color:#4ade80;">✅ Under control</p>
+            <p style="color:#4ade80;">✅ You are under budget. Good job!</p>
             {% endif %}
+
         </div>
 
 
